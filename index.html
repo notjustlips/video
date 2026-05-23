@@ -7,320 +7,203 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Didact+Gothic&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 :root {
-  --cream:  #FAF6F1;
-  --light:  #F3ECE5;
-  --blush:  #EDD5C5;
-  --rose:   #C07A5C;
-  --gold:   #C5A46A;
-  --muted:  #7B5548;
-  --deep:   #221310;
+  --cream: #FAF6F1;
+  --rose:  #C07A5C;
+  --gold:  #C5A46A;
+  --muted: #7B5548;
+  --deep:  #221310;
 }
-
-body {
+html, body {
+  width: 100%; height: 100vh;
   background: var(--cream);
-  width: 1080px;
-  height: 1920px;
-  overflow: hidden;
   font-family: 'Didact Gothic', sans-serif;
-  position: relative;
+  overflow: hidden;
 }
-
-/* ─── BACKGROUND TEXTURE ─── */
 body::before {
   content: '';
-  position: absolute; inset: 0;
+  position: fixed; inset: 0;
   background:
-    radial-gradient(ellipse at 20% 15%, rgba(197,164,106,0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 85%, rgba(192,122,92,0.06) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 15%, rgba(197,164,106,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 85%, rgba(192,122,92,0.07) 0%, transparent 50%);
   pointer-events: none;
 }
 
-/* ─── LOGO TOP ─── */
+/* CORNERS */
+.corner { position: fixed; width: 20px; height: 20px; }
+.corner-tl { top: 24px; left: 24px; border-top: 1px solid rgba(197,164,106,0.4); border-left: 1px solid rgba(197,164,106,0.4); }
+.corner-tr { top: 24px; right: 24px; border-top: 1px solid rgba(197,164,106,0.4); border-right: 1px solid rgba(197,164,106,0.4); }
+.corner-bl { bottom: 24px; left: 24px; border-bottom: 1px solid rgba(197,164,106,0.4); border-left: 1px solid rgba(197,164,106,0.4); }
+.corner-br { bottom: 24px; right: 24px; border-bottom: 1px solid rgba(197,164,106,0.4); border-right: 1px solid rgba(197,164,106,0.4); }
+
+/* LOGO */
 .logo {
-  position: absolute;
-  top: 80px; left: 50%;
-  transform: translateX(-50%);
+  position: fixed; top: 32px; left: 50%; transform: translateX(-50%);
   text-align: center;
-  opacity: 0;
-  animation: fadeUp 1s 0.3s ease forwards;
 }
 .logo-text {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 2.2rem; font-weight: 300;
-  letter-spacing: 0.05em; color: var(--deep);
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-weight: 300; color: var(--deep); letter-spacing: 0.04em;
 }
 .logo-text em { font-style: italic; color: var(--gold); }
 .logo-sub {
-  font-size: 0.65rem; letter-spacing: 0.38em;
-  text-transform: uppercase; color: var(--muted);
-  margin-top: 6px;
+  font-size: clamp(0.45rem, 1vw, 0.6rem);
+  letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--muted); margin-top: 4px;
 }
 
-/* ─── DIVIDER LINE ─── */
-.divider {
-  position: absolute;
-  left: 80px; right: 80px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(197,164,106,0.4), transparent);
+/* DIVIDERS */
+.div-top, .div-bot {
+  position: fixed; left: 48px; right: 48px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(197,164,106,0.35), transparent);
 }
-.divider-top { top: 200px; }
-.divider-bottom { bottom: 200px; }
+.div-top { top: 110px; }
+.div-bot { bottom: 80px; }
 
-/* ─── MAIN CONTENT AREA ─── */
-.content {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 880px;
-  text-align: center;
-}
-
-/* ─── EYEBROW ─── */
-.eyebrow {
-  font-size: 0.8rem; letter-spacing: 0.42em;
-  text-transform: uppercase; color: var(--rose);
-  margin-bottom: 48px;
-  display: flex; align-items: center;
-  justify-content: center; gap: 16px;
-  opacity: 0;
-}
-.eyebrow::before, .eyebrow::after {
-  content: ''; width: 48px; height: 1px; background: var(--rose);
-}
-
-/* ─── QUOTE CARDS ─── */
+/* CARDS */
 .card {
-  position: absolute;
+  position: fixed;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 880px;
+  width: min(85vw, 780px);
   text-align: center;
   opacity: 0;
   pointer-events: none;
-  transition: none;
 }
-
 .card-label {
-  font-size: 0.72rem; letter-spacing: 0.38em;
-  text-transform: uppercase; color: var(--rose);
-  margin-bottom: 32px;
-  display: flex; align-items: center;
-  justify-content: center; gap: 14px;
+  font-size: clamp(0.55rem, 1.2vw, 0.72rem);
+  letter-spacing: 0.38em; text-transform: uppercase;
+  color: var(--rose); margin-bottom: clamp(20px, 3vh, 36px);
+  display: flex; align-items: center; justify-content: center; gap: 14px;
 }
 .card-label::before, .card-label::after {
-  content: ''; width: 40px; height: 1px; background: var(--rose);
+  content: ''; width: 36px; height: 1px; background: var(--rose);
 }
-
 .card-quote {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 3.8rem; font-weight: 300;
-  line-height: 1.12; color: var(--deep);
-  margin-bottom: 28px;
+  font-size: clamp(2rem, 5.5vw, 4rem);
+  font-weight: 300; line-height: 1.12; color: var(--deep);
+  margin-bottom: clamp(16px, 2.5vh, 28px);
 }
 .card-quote em { font-style: italic; color: var(--rose); }
-.card-quote strong {
-  font-weight: 400; color: var(--gold);
-  font-style: normal;
-}
-
+.card-quote strong { font-weight: 400; color: var(--gold); }
 .card-sub {
-  font-size: 1rem; line-height: 1.9;
-  color: var(--muted); max-width: 680px;
-  margin: 0 auto;
-  font-family: 'Didact Gothic', sans-serif;
+  font-size: clamp(0.75rem, 1.6vw, 1rem);
+  line-height: 1.85; color: var(--muted);
+  max-width: 600px; margin: 0 auto;
 }
 
-/* ─── COUNTER ─── */
+/* COUNTERS */
 .counter-wrap {
   display: flex; justify-content: center;
-  gap: 80px; margin-top: 48px;
+  gap: clamp(32px, 6vw, 72px);
+  margin-top: clamp(24px, 3vh, 44px);
 }
-.counter-item { text-align: center; }
 .counter-num {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 5rem; font-weight: 300;
-  color: var(--gold); line-height: 1;
   display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.8rem, 7vw, 5rem);
+  font-weight: 300; color: var(--gold); line-height: 1;
 }
 .counter-label {
-  font-size: 0.65rem; letter-spacing: 0.28em;
-  text-transform: uppercase; color: var(--muted);
-  margin-top: 8px; display: block;
+  display: block;
+  font-size: clamp(0.55rem, 1vw, 0.65rem);
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted); margin-top: 8px;
 }
 
-/* ─── BOTTOM BADGE ─── */
+/* BADGE */
 .badge {
-  position: absolute;
-  bottom: 100px; left: 50%;
-  transform: translateX(-50%);
-  border: 1px solid rgba(197,164,106,0.35);
-  padding: 18px 48px;
-  text-align: center;
-  opacity: 0;
-  white-space: nowrap;
-}
-.badge-text {
-  font-size: 0.72rem; letter-spacing: 0.32em;
-  text-transform: uppercase; color: var(--gold);
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+  border: 1px solid rgba(197,164,106,0.3);
+  padding: 12px 36px; opacity: 0; white-space: nowrap;
+  font-size: clamp(0.55rem, 1vw, 0.7rem);
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
+  transition: opacity 1s ease;
 }
 
-/* ─── CORNER MARKS ─── */
-.corner {
-  position: absolute;
-  width: 24px; height: 24px;
-}
-.corner-tl { top: 48px; left: 48px; border-top: 1px solid rgba(197,164,106,0.4); border-left: 1px solid rgba(197,164,106,0.4); }
-.corner-tr { top: 48px; right: 48px; border-top: 1px solid rgba(197,164,106,0.4); border-right: 1px solid rgba(197,164,106,0.4); }
-.corner-bl { bottom: 48px; left: 48px; border-bottom: 1px solid rgba(197,164,106,0.4); border-left: 1px solid rgba(197,164,106,0.4); }
-.corner-br { bottom: 48px; right: 48px; border-bottom: 1px solid rgba(197,164,106,0.4); border-right: 1px solid rgba(197,164,106,0.4); }
-
-/* ─── PROGRESS BAR ─── */
+/* PROGRESS */
 .progress-bar {
-  position: absolute;
-  bottom: 0; left: 0;
+  position: fixed; bottom: 0; left: 0;
   height: 3px;
   background: linear-gradient(90deg, var(--rose), var(--gold));
-  width: 0%;
-  transition: width 0.1s linear;
+  width: 0%; transition: width 0.1s linear;
 }
 
-/* ─── ANIMATIONS ─── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeUpCenter {
-  from { opacity: 0; transform: translate(-50%, calc(-50% + 30px)); }
-  to   { opacity: 1; transform: translate(-50%, -50%); }
-}
-.card.show {
-  opacity: 1 !important;
-}
-@keyframes fadeOutCenter {
-  from { opacity: 1; transform: translate(-50%, -50%); }
-  to   { opacity: 0; transform: translate(-50%, calc(-50% - 20px)); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-.card.active {
-  animation: fadeUpCenter 0.9s cubic-bezier(.22,.68,0,1.2) forwards;
-}
-.card.hide {
-  animation: fadeOutCenter 0.6s ease forwards;
-}
-
-/* CONTROLS (hidden during recording) */
+/* CONTROLS */
 .controls {
-  position: fixed;
-  bottom: 20px; right: 20px;
-  display: flex; gap: 10px; z-index: 999;
+  position: fixed; bottom: 16px; right: 16px;
+  display: flex; gap: 8px; z-index: 999;
 }
 .ctrl-btn {
   background: var(--deep); color: var(--cream);
   border: none; cursor: pointer;
-  padding: 10px 20px; font-size: 0.7rem;
+  padding: 10px 20px; font-size: 0.68rem;
   letter-spacing: 0.15em; text-transform: uppercase;
   font-family: inherit; transition: background 0.2s;
 }
 .ctrl-btn:hover { background: var(--rose); }
-.ctrl-btn.hide-me { display: none; }
 </style>
 </head>
 <body>
 
-<!-- CORNER MARKS -->
 <div class="corner corner-tl"></div>
 <div class="corner corner-tr"></div>
 <div class="corner corner-bl"></div>
 <div class="corner corner-br"></div>
+<div class="div-top"></div>
+<div class="div-bot"></div>
 
-<!-- DIVIDERS -->
-<div class="divider divider-top"></div>
-<div class="divider divider-bottom"></div>
-
-<!-- LOGO -->
 <div class="logo">
   <div class="logo-text"><em>not</em>JUSTLIPS</div>
   <div class="logo-sub">New York · Aesthetic Clinic</div>
 </div>
 
-<!-- BADGE BOTTOM -->
-<div class="badge" id="badge">
-  <div class="badge-text">✦ &nbsp; Signature method by Olga Modlinska &nbsp; ✦</div>
-</div>
-
-<!-- PROGRESS BAR -->
+<div class="badge" id="badge">✦ &nbsp; Signature method by Olga Modlinska &nbsp; ✦</div>
 <div class="progress-bar" id="progressBar"></div>
 
-<!-- ═══ CARDS ═══ -->
-
-<!-- Card 0: Intro -->
+<!-- CARD 0 -->
 <div class="card" id="card0">
   <div class="card-label">notJUSTLIPS · TOX</div>
-  <div class="card-quote">
-    The hidden cost of<br><em>waiting.</em>
-  </div>
-  <div class="card-sub">
-    There is a common misconception that TOX is a reactive treatment —<br>
-    something you seek when you already see wrinkles.
-  </div>
+  <div class="card-quote">The hidden cost<br>of <em>waiting.</em></div>
+  <div class="card-sub">There is a common misconception that TOX is a reactive treatment — something you seek when you already see wrinkles.</div>
 </div>
 
-<!-- Card 1: Paper analogy -->
+<!-- CARD 1 -->
 <div class="card" id="card1">
   <div class="card-label">structural preservation</div>
-  <div class="card-quote">
-    Every time you laugh,<br>frown, or smile —<br>
-    <em>the skin creases.</em>
-  </div>
-  <div class="card-sub">
-    Just like a piece of paper, when you crease it over time,<br>
-    it gets deeper and deeper.
-  </div>
+  <div class="card-quote">Every time you laugh,<br>frown, or smile —<br><em>the skin creases.</em></div>
+  <div class="card-sub">Just like a piece of paper — when you crease it over time, it gets deeper and deeper.</div>
 </div>
 
-<!-- Card 2: Counter -->
+<!-- CARD 2 -->
 <div class="card" id="card2">
   <div class="card-label">why start early</div>
-  <div class="card-quote">
-    <strong>TOX</strong> is not about<br>
-    freezing your<br><em>expressions.</em>
-  </div>
+  <div class="card-quote"><strong>TOX</strong> is not about<br>freezing your <em>expressions.</em></div>
   <div class="counter-wrap">
-    <div class="counter-item">
+    <div>
       <span class="counter-num" id="cnt1">0</span>
       <span class="counter-label">Years earlier<br>= better results</span>
     </div>
-    <div class="counter-item">
+    <div>
       <span class="counter-num" id="cnt2">0</span>
       <span class="counter-label">% softer<br>muscle impact</span>
     </div>
-    <div class="counter-item">
+    <div>
       <span class="counter-num" id="cnt3">0</span>
       <span class="counter-label">months<br>results last</span>
     </div>
   </div>
 </div>
 
-<!-- Card 3: Final -->
+<!-- CARD 3 -->
 <div class="card" id="card3">
   <div class="card-label">the notJUSTLIPS approach</div>
-  <div class="card-quote">
-    It's about ensuring<br>your skin behaves<br>
-    <em>tomorrow</em> as it does<br>right now.
-  </div>
-  <div class="card-sub">
-    TOX is not about changing how you look.<br>
-    It's about preserving it.
-  </div>
+  <div class="card-quote">Your skin <em>tomorrow</em><br>as it does right now.</div>
+  <div class="card-sub">TOX is not about changing how you look.<br>It's about preserving it — before the crease becomes permanent.</div>
 </div>
 
-<!-- CONTROLS -->
 <div class="controls">
   <button class="ctrl-btn" id="btnPlay">▶ Play</button>
   <button class="ctrl-btn" id="btnHide">Hide Controls</button>
@@ -329,110 +212,94 @@ body::before {
 <script>
 const cards = ['card0','card1','card2','card3'];
 const durations = [4500, 4500, 6000, 5000];
-let current = -1;
-let playing = false;
+const total = durations.reduce((a,b)=>a+b,0);
+let cur = -1, playing = false;
 
-function hideAll() {
-  cards.forEach(id => {
-    const el = document.getElementById(id);
-    el.style.opacity = '0';
-    el.style.transform = 'translate(-50%, -50%)';
-    el.style.transition = 'none';
-  });
-}
-
-function showCard(idx) {
+function show(idx) {
   if (idx >= cards.length) {
-    // End
     document.getElementById('badge').style.opacity = '1';
-    document.getElementById('progressBar').style.width = '100%';
     document.getElementById('btnPlay').textContent = '▶ Play';
     playing = false;
     return;
   }
 
-  // Hide previous with fade out
-  if (current >= 0) {
-    const prev = document.getElementById(cards[current]);
+  // Fade out previous
+  if (cur >= 0) {
+    const prev = document.getElementById(cards[cur]);
     prev.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
     prev.style.opacity = '0';
-    prev.style.transform = 'translate(-50%, calc(-50% - 20px))';
+    prev.style.transform = 'translate(-50%, calc(-50% - 24px))';
   }
 
-  current = idx;
+  cur = idx;
 
   setTimeout(() => {
-    const card = document.getElementById(cards[idx]);
-    card.style.transform = 'translate(-50%, calc(-50% + 30px))';
-    card.style.transition = 'none';
-    card.style.opacity = '0';
+    const el = document.getElementById(cards[idx]);
+    // Reset position below
+    el.style.transition = 'none';
+    el.style.transform = 'translate(-50%, calc(-50% + 32px))';
+    el.style.opacity = '0';
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        card.style.transition = 'opacity 0.8s ease, transform 0.8s cubic-bezier(.22,.68,0,1.2)';
-        card.style.opacity = '1';
-        card.style.transform = 'translate(-50%, -50%)';
+        el.style.transition = 'opacity 0.85s ease, transform 0.85s cubic-bezier(.22,.68,0,1.2)';
+        el.style.opacity = '1';
+        el.style.transform = 'translate(-50%, -50%)';
       });
     });
 
-    // Counters on card2
     if (idx === 2) {
       setTimeout(() => {
-        animateCounter('cnt1', 0, 5, 1500, '+');
-        animateCounter('cnt2', 0, 70, 2000, '%');
-        animateCounter('cnt3', 0, 6, 1800, ' mo');
-      }, 400);
+        counter('cnt1', 5, 1600, '+');
+        counter('cnt2', 70, 2000, '%');
+        counter('cnt3', 6, 1800, ' mo');
+      }, 500);
     }
 
-    // Progress bar
-    const totalDuration = durations.reduce((a,b) => a+b, 0);
-    const elapsed = durations.slice(0, idx).reduce((a,b) => a+b, 0);
-    const pct = (elapsed / totalDuration) * 100;
-    const progressBar = document.getElementById('progressBar');
-    progressBar.style.transition = 'none';
-    progressBar.style.width = pct + '%';
+    // Progress
+    const elapsed = durations.slice(0,idx).reduce((a,b)=>a+b,0);
+    const bar = document.getElementById('progressBar');
+    bar.style.transition = 'none';
+    bar.style.width = (elapsed/total*100) + '%';
     setTimeout(() => {
-      progressBar.style.transition = 'width ' + durations[idx] + 'ms linear';
-      progressBar.style.width = ((elapsed + durations[idx]) / totalDuration * 100) + '%';
-    }, 100);
+      bar.style.transition = 'width ' + durations[idx] + 'ms linear';
+      bar.style.width = ((elapsed+durations[idx])/total*100) + '%';
+    }, 80);
 
-    // Next card
-    setTimeout(() => {
-      if (playing) showCard(idx + 1);
-    }, durations[idx]);
-
-  }, current > 0 ? 500 : 0);
+    setTimeout(() => { if (playing) show(idx+1); }, durations[idx]);
+  }, cur > 0 ? 600 : 0);
 }
 
-function animateCounter(id, from, to, duration, suffix) {
+function counter(id, to, dur, suf) {
   const el = document.getElementById(id);
-  if (!el) return;
-  const start = performance.now();
-  function step(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    const val = Math.round(from + (to - from) * ease);
-    el.textContent = val + (suffix || '');
-    if (progress < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
+  const t0 = performance.now();
+  (function tick(now) {
+    const p = Math.min((now-t0)/dur, 1);
+    const e = 1 - Math.pow(1-p, 3);
+    el.textContent = Math.round(to*e) + (suf||'');
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
 }
 
-document.getElementById('btnPlay').addEventListener('click', function() {
+document.getElementById('btnPlay').onclick = function() {
   if (playing) return;
-  playing = true;
-  current = -1;
-  hideAll();
+  playing = true; cur = -1;
+  cards.forEach(id => {
+    const el = document.getElementById(id);
+    el.style.transition = 'none';
+    el.style.opacity = '0';
+    el.style.transform = 'translate(-50%, -50%)';
+  });
   document.getElementById('badge').style.opacity = '0';
   document.getElementById('progressBar').style.transition = 'none';
   document.getElementById('progressBar').style.width = '0%';
   this.textContent = '▶ Playing...';
-  setTimeout(() => showCard(0), 300);
-});
+  setTimeout(() => show(0), 400);
+};
 
-document.getElementById('btnHide').addEventListener('click', function() {
+document.getElementById('btnHide').onclick = function() {
   document.querySelector('.controls').style.display = 'none';
-});
+};
 </script>
 </body>
 </html>
