@@ -99,6 +99,7 @@ body::before {
   text-align: center;
   opacity: 0;
   pointer-events: none;
+  transition: none;
 }
 
 .card-label {
@@ -194,6 +195,9 @@ body::before {
   from { opacity: 0; transform: translate(-50%, calc(-50% + 30px)); }
   to   { opacity: 1; transform: translate(-50%, -50%); }
 }
+.card.show {
+  opacity: 1 !important;
+}
 @keyframes fadeOutCenter {
   from { opacity: 1; transform: translate(-50%, -50%); }
   to   { opacity: 0; transform: translate(-50%, calc(-50% - 20px)); }
@@ -203,7 +207,7 @@ body::before {
   to   { opacity: 1; }
 }
 
-.card.show {
+.card.active {
   animation: fadeUpCenter 0.9s cubic-bezier(.22,.68,0,1.2) forwards;
 }
 .card.hide {
@@ -324,65 +328,80 @@ body::before {
 
 <script>
 const cards = ['card0','card1','card2','card3'];
-const durations = [4500, 4500, 6000, 5000]; // ms each card shows
+const durations = [4500, 4500, 6000, 5000];
 let current = -1;
 let playing = false;
-let timer = null;
-let progressTimer = null;
-let progressStart = null;
-let progressDuration = 0;
 
-const progressBar = document.getElementById('progressBar');
-const badge = document.getElementById('badge');
-const totalDuration = durations.reduce((a,b) => a+b, 0);
+function hideAll() {
+  cards.forEach(id => {
+    const el = document.getElementById(id);
+    el.style.opacity = '0';
+    el.style.transform = 'translate(-50%, -50%)';
+    el.style.transition = 'none';
+  });
+}
 
 function showCard(idx) {
-  // Hide previous
-  if (current >= 0) {
-    const prev = document.getElementById(cards[current]);
-    prev.classList.remove('show');
-    prev.classList.add('hide');
-    setTimeout(() => { prev.classList.remove('hide'); }, 700);
-  }
-
-  current = idx;
-
   if (idx >= cards.length) {
-    // End — show badge
-    badge.style.animation = 'fadeIn 1s ease forwards';
-    progressBar.style.width = '100%';
+    // End
+    document.getElementById('badge').style.opacity = '1';
+    document.getElementById('progressBar').style.width = '100%';
+    document.getElementById('btnPlay').textContent = '▶ Play';
     playing = false;
     return;
   }
 
-  const card = document.getElementById(cards[idx]);
-  card.classList.remove('hide');
-  card.classList.add('show');
-
-  // Counters on card2
-  if (idx === 2) {
-    animateCounter('cnt1', 0, 5, 1500, '+');
-    animateCounter('cnt2', 0, 70, 2000, '%');
-    animateCounter('cnt3', 0, 4, 1800, '–6');
+  // Hide previous with fade out
+  if (current >= 0) {
+    const prev = document.getElementById(cards[current]);
+    prev.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    prev.style.opacity = '0';
+    prev.style.transform = 'translate(-50%, calc(-50% - 20px))';
   }
 
-  // Progress
-  animateProgress(idx);
+  current = idx;
 
-  timer = setTimeout(() => {
-    if (playing) showCard(idx + 1);
-  }, durations[idx]);
-}
-
-function animateProgress(idx) {
-  const elapsed = durations.slice(0, idx).reduce((a,b) => a+b, 0);
-  const pct = (elapsed / totalDuration) * 100;
-  progressBar.style.transition = 'none';
-  progressBar.style.width = pct + '%';
   setTimeout(() => {
-    progressBar.style.transition = 'width ' + durations[idx] + 'ms linear';
-    progressBar.style.width = ((elapsed + durations[idx]) / totalDuration * 100) + '%';
-  }, 50);
+    const card = document.getElementById(cards[idx]);
+    card.style.transform = 'translate(-50%, calc(-50% + 30px))';
+    card.style.transition = 'none';
+    card.style.opacity = '0';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        card.style.transition = 'opacity 0.8s ease, transform 0.8s cubic-bezier(.22,.68,0,1.2)';
+        card.style.opacity = '1';
+        card.style.transform = 'translate(-50%, -50%)';
+      });
+    });
+
+    // Counters on card2
+    if (idx === 2) {
+      setTimeout(() => {
+        animateCounter('cnt1', 0, 5, 1500, '+');
+        animateCounter('cnt2', 0, 70, 2000, '%');
+        animateCounter('cnt3', 0, 6, 1800, ' mo');
+      }, 400);
+    }
+
+    // Progress bar
+    const totalDuration = durations.reduce((a,b) => a+b, 0);
+    const elapsed = durations.slice(0, idx).reduce((a,b) => a+b, 0);
+    const pct = (elapsed / totalDuration) * 100;
+    const progressBar = document.getElementById('progressBar');
+    progressBar.style.transition = 'none';
+    progressBar.style.width = pct + '%';
+    setTimeout(() => {
+      progressBar.style.transition = 'width ' + durations[idx] + 'ms linear';
+      progressBar.style.width = ((elapsed + durations[idx]) / totalDuration * 100) + '%';
+    }, 100);
+
+    // Next card
+    setTimeout(() => {
+      if (playing) showCard(idx + 1);
+    }, durations[idx]);
+
+  }, current > 0 ? 500 : 0);
 }
 
 function animateCounter(id, from, to, duration, suffix) {
@@ -403,19 +422,12 @@ document.getElementById('btnPlay').addEventListener('click', function() {
   if (playing) return;
   playing = true;
   current = -1;
-  // Reset all cards
-  cards.forEach(id => {
-    const c = document.getElementById(id);
-    c.classList.remove('show', 'hide');
-    c.style.opacity = '0';
-  });
-  badge.style.animation = 'none';
-  badge.style.opacity = '0';
-  progressBar.style.transition = 'none';
-  progressBar.style.width = '0%';
+  hideAll();
+  document.getElementById('badge').style.opacity = '0';
+  document.getElementById('progressBar').style.transition = 'none';
+  document.getElementById('progressBar').style.width = '0%';
   this.textContent = '▶ Playing...';
-  setTimeout(() => { showCard(0); }, 500);
-  setTimeout(() => { this.textContent = '▶ Play'; }, totalDuration + 1000);
+  setTimeout(() => showCard(0), 300);
 });
 
 document.getElementById('btnHide').addEventListener('click', function() {
